@@ -71,29 +71,22 @@ if (! $dom->load($configFile)) {
 	echo "Unable to load XML file ", $configFile, ".", PHP_EOL;
 }
 
-$beginCertText = "-----BEGIN CERTIFICATE-----";
-$endCertText = "-----END CERTIFICATE-----";
+
 $certText = file($certFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 if ($certText === false) {
 	echo "Unable to open certificate file ", $certFile, PHP_EOL;
 	exit(1);
 }
+$certText = base64_encode(implode("\n", $certText));
 
-$certText = implode("", array_filter($certText, function ($line) use ($beginCertText, $endCertText) {
-	return ! in_array($line, [$beginCertText, $endCertText]);
-}));
 
-$beginKeyText = "-----BEGIN RSA PRIVATE KEY-----";
-$endKeyText = "-----END RSA PRIVATE KEY-----";
 $keyText = file($keyFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-if ($certText === false) {
+if ($keyText === false) {
 	echo "Unable to open key file ", $keyText, PHP_EOL;
 	exit(1);
 }
+$keyText = base64_encode(implode("\n", $keyText));
 
-$keyText = implode("", array_filter($keyText, function ($line) use ($beginKeyText, $endKeyText) {
-	return ! in_array($line, [$beginKeyText, $endKeyText]);
-}));
 
 $xpath = new \DOMXPath($dom);
 $descrs = $xpath->query('/pfsense/cert/descr');
